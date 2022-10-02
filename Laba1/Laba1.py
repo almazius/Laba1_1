@@ -1,15 +1,29 @@
 import xml.etree.ElementTree as ET
 import json
 import sys
+import xml
+import os
+from msvcrt import getch
 
 class Bird: # JSON
     def __init__(self, name="", speed=0, color=""):
-        self.name = name
-        self.speed = speed
-        self.color = color
+        try:
+            self.name = name
+            self.speed = speed
+            self.color = color
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
+
 
     def __del__(self):
-        print("Bird " + self.name + " deleted.")
+        try:
+            print("Bird " + self.name + " deleted.")
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
 
     def getDict(self):
         data = {}
@@ -21,18 +35,35 @@ class Bird: # JSON
         print("Bird like fly! They're already flying!")
 
     def die(self):
-        print("Minus one bird... We will remember her as one of the best!")
-        del self
+        try:
+            print("Minus one bird... We will remember her as one of the best!")
+            del self
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
+
 # end Bird
 
 class Mammal:
     def __init__(self, name="", Type="", age=0):
-        self.name = name
-        self.type = Type
-        self.age = age
+        try:
+            self.name = name
+            self.type = Type
+            self.age = age
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
+
 
     def __del__(self):
-        print("Mammal " + self.name + " deleted.")
+        try:
+            print("Mammal " + self.name + " deleted.")
+        except TypeError:
+            print("Uncorrected value")
+        except Exception:
+            print("Error")
 
     def getDict(self):
         data = {}
@@ -50,35 +81,216 @@ class Mammal:
 # end Mammal
 
 class GodSkill:
+    birds = []
+    mammals = []
+
+    @staticmethod
+    def begin():
+        print("Hi, this god simulator!")
+        
+        while True:
+            print("What you want?\n  1) Create bird\n  2) Create mammal\n  3) Kill bird\n  4) Kill mammal\n  5) Create JSON on bird")
+            print("  6) Create XML on mammal\n  7) Create bird from JSON\n  8) Create mammal from XML\n  9) Kill this f*cking world")
+            print("  SPASE) check population")
+            print("P.S. press key (1-9 or SPACE)")
+            n = ord(getch())
+            os.system('CLS')
+            if n == 49:
+               GodSkill.createBird() 
+            elif n==50:
+                GodSkill.createMammal()
+            elif n==51:
+                GodSkill.killBird()
+            elif n==52:
+                GodSkill.killMammal()
+            elif n==53:
+                GodSkill.createJSON()
+            elif n == 54:
+                GodSkill.createXML()
+            elif n == 55:
+                GodSkill.CreateBirdFromJSON()
+            elif n == 56:
+                GodSkill.CreateMammalFromXML()
+            elif n==57:
+                GodSkill.KillWorld()
+            elif n==32:
+                print("Brids:")
+                for el in GodSkill.birds:
+                    print(el.__dict__)
+                print("Mammals:")
+                for el in GodSkill.mammals:
+                    print(el.__dict__)
+
+    @staticmethod
+    def createBird():
+        print("Write data (name speed color)")
+        try:
+            name = input()
+            if name >= '0' and name<='9':
+                raise Exception
+            speed = input()
+            color = input()
+            if color >= '0' and color<='9':
+                raise Exception
+            GodSkill.birds.append(Bird(name, int(speed), color))
+        except ValueError:
+            print("Incorrect value")
+        except Exception:
+            print("Error")
+
+
+    @staticmethod
+    def createMammal():
+        print("Write data (name type age)")
+        try:
+            name = input()
+            if name >= '0' and name<='9':
+                raise Exception
+            Type = input()
+            if Type >= '0' and Type<='9':
+                raise Exception
+            age = input()
+            GodSkill.mammals.append(Mammal(name, Type, int(age)))
+        except ValueError:
+            print("Incorrect value")
+        except Exception:
+            print("Error")
+
+
+    @staticmethod
+    def killBird():
+        try:
+            print("I don't like what you're doing")
+            GodSkill.birds[-1].die()
+            GodSkill.birds.pop()
+        except IndexError:
+            print("Error index. Mb all birs is die?")
+        except Exception:
+            print("Error")
     @staticmethod 
     def allDie():
         print("World is lost...")
         sys.exit()
 
+
+    @staticmethod
+    def killMammal():
+        try:
+            GodSkill.mammals.pop()
+        except IndexError:
+            print("Error index. Mb all mammal is die?")
+        except Exception:
+            print("Error")
+
+    @staticmethod
+    def createJSON():
+        try:
+            dBirds = {}
+            data = {}
+            if len(GodSkill.birds) == 0:
+                print("We have't birs!")
+            else:
+                for el in GodSkill.birds:
+                    dBirds[el.name] = el.getDict()
+                data["birds"] = dBirds
+                FileManager.JSONSerialization(data)
+        except Exception:
+            print("Error")
+
+
+    @staticmethod
+    def createXML():
+        try:
+            if len(GodSkill.mammals) == 0:
+                print("We have't mammals")
+            else:
+                for el in GodSkill.mammals:
+                    FileManager.XMLserialization(el)
+        except Exception:
+            print("Error")
+
+
+    @staticmethod 
+    def CreateBirdFromJSON():
+        try:
+            print("Write path or send emply string")
+            l = []
+            s = input()
+            if s == "":
+                l = FileManager.JSONdeserialization()
+            else:
+                l = FileManager.JSONdeserialization(s)
+            birds = birds+l
+        except Exception:
+            print("Error")
+        else:
+            print("Success")
+
+    @staticmethod 
+    def CreateMammalFromXML():
+        try:
+            print("Write path or send emply string")
+            l = []
+            s = input()
+            if s == "":
+                l = FileManager.XMLdeserialization()
+            else:
+                l = FileManager.XMLdeserialization(s)
+            mammals = mammals+l
+        except Exception:
+            print("Error")
+        else:
+            print("Success")
+
+    @staticmethod 
+    def KillWorld():
+        try:
+            GodSkill.allDie()
+        except Exception:
+            print("Error")
+
+
     @staticmethod 
     def killBird(obj):
-        obj.die()
+        try:
+            obj.die()
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
+
 
     @staticmethod 
     def bornBird():
-        return Bird("Alex", 12, "red")
+        try:
+            return Bird("Alex", 12, "red")
+        except Exception:
+            print("Error")
+
 
     @staticmethod 
     def bornMammal():
-        return Mammal("Tapok", "zebra", 0)
+        try:
+            return Mammal("Tapok", "zebra", 0)
+        except Exception:
+            print("Error")
 
 # end GodSkill
 
-bird1 = GodSkill.bornBird()
-print(bird1.name + " " + str(bird1.speed) + "  " + bird1.color)
 
 
 class FileManager:
     @staticmethod
     def JSONSerialization(data):
-        with open("data_file.json", "w") as write_file:
-            json.dump(data, write_file, indent = 4)
-            
+        try:
+            with open("data_file.json", "w") as write_file:
+                json.dump(data, write_file, indent = 4)
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
+
+
     @staticmethod
     def JSONdeserialization(path = "data_file.json"):
         with open(path, "r") as read_file:
@@ -89,73 +301,42 @@ class FileManager:
                 l.append(Bird(el, int(data["birds"][el]["speed"]), data["birds"][el]["color"]))
         return l
 
+
     @staticmethod
     def XMLserialization(data):
-        root = ET.Element("mammals")
-        mammalName = ET.SubElement(root, data.name)
-        mType = ET.SubElement(mammalName, "Type")
-        mType.text = data.type
-        mAge = ET.SubElement(mammalName, "Age")
-        mAge.text = str(data.age)
-        
-        s = ET.tostring(root, encoding="utf-8", method="xml")
-        s = s.decode("UTF-8")
-        with open(f"data_file_{data.name}.xml", "w") as wf:
-            wf.write(s)
-
+        try:
+            root = ET.Element("mammals")
+            mammalName = ET.SubElement(root, data.name)
+            mType = ET.SubElement(mammalName, "Type")
+            mType.text = data.type
+            mAge = ET.SubElement(mammalName, "Age")
+            mAge.text = str(data.age)
+            
+            s = ET.tostring(root, encoding="utf-8", method="xml")
+            s = s.decode("UTF-8")
+            with open(f"data_file_{data.name}.xml", "w") as wf:
+                wf.write(s)
+        except AttributeError:
+            print("Uncorrected object")
+        except Exception:
+            print("Error")
 
 
     @staticmethod
     def XMLdeserialization(path = "data_file.xml"):
-        l = []
-        tree = ET.parse(path)
-        root = tree.getroot()
-        for el in root:
-            l.append(Mammal(el.tag, el[0].text, int(el[1].text)))
-        return l
+        try:
+            l = []
+            tree = ET.parse(path)
+            root = tree.getroot()
+            for el in root:
+                l.append(Mammal(el.tag, el[0].text, int(el[1].text)))
+            return l
+        except FileNotFoundError:
+            print("File not found")
+        except xml.etree.ElementTree.ParseError: 
+            print("File uncorrected")
+        except Exception:
+            print("Error")
 
-
-#bird2 = Bird("1", 1, "bb")
-#bird3 = Bird("2", 2, "3b")
-
-#birds = {}
-
-#birds[bird1.name] = bird1.getDict()
-#birds[bird2.name] = bird2.getDict()
-
-#data = {}
-
-#data["birds"] = birds
-
-#FileManager.JSONSerialization(data)
-
-#l = FileManager.JSONdeserialization()
-#for el in l:
-#    print(el.getDict())
-a1 = Mammal("Vasya", "Zebra", 12)
-a2 = Mammal("Petya", "Wolk", 1)
-a3 = Mammal("Tigar", "LEV", 16)
-
-mammals = {}
-
-mammals[a1.name] = a1.getDict()
-mammals[a2.name] = a2.getDict()
-mammals[a3.name] = a3.getDict()
-
-
-data = {}
-
-data["mammals"] = mammals
-
-FileManager.XMLserialization(a1)
-
-
-
-l = FileManager.XMLdeserialization("data_file_Vasya.xml")
-for el in l:
-    print(el.__dict__)
-GodSkill.allDie()
-
-
-
-    
+#end FileManager
+GodSkill.begin()
