@@ -1,11 +1,17 @@
+from asyncore import write
 import json
 import sys
+import os
 
 class ErrorType(Exception):
     """ """
-    def 
+    def __init__(self, message="This type dont serelization."):
+        self.message = message;
+        super().__init__(self.message)
 
-class Bird:
+#end ErrorType
+
+class Bird: # JSON
     def __init__(self, name="", speed=0, color=""):
         self.name = name
         self.speed = speed
@@ -21,7 +27,6 @@ class Bird:
     def die(self):
         print("Minus one bird... We will remember her as one of the best!")
         del self
-
 # end Bird
 
 class Mammal:
@@ -71,22 +76,31 @@ class FileManager:
     @staticmethod
     def JSONSerialization(data):
         with open("data_file.json", "w") as write_file:
-            if type(data)==type(list):
-                for el in data:
-                    json.dump(el.__dict__, write_file, indent = 4)
-            elif type(data)==type(Bird):
-                json.dump(el.__dict__, write_file, indent = 4)
-            elif type(data) == type(Mammal):
-                json.dump(el.__dict__, write_file, indent = 4)
-            else:
-                return Exception 
+            write_file.write("[\n")
+            for i  in range(len(data)-1):
+                json.dump(data[i].__dict__, write_file, indent = 4)
+                write_file.write(',\n')
+            json.dump(data[-1].__dict__, write_file, indent = 4)
+            write_file.write("\n]")
 
+    @staticmethod
+    def JSONdeserialization(path = "data_file.json"):
+        l=[]
+        with open(path, "r") as read_file:
+            data = json.load(read_file)
+            for el in data:
+                l.append(Bird(el["name"], el["speed"], el["color"]))
+        return l
 
 bird2 = Bird("1", 1, "bb")
 bird3 = Bird("2", 2, "3b")
 
-l = [bird1, bird2, bird3]
+#l = [bird1, bird2, bird3]
 
-FileManager.JSONSerialization(l)
+#FileManager.JSONSerialization(l)
+
+l = FileManager.JSONdeserialization("data_file.json")
+for el in l:
+    print("Name: " + el.name + " Speed: " + str(el.speed) + " clolor: " + el.color + "\n")
 
 GodSkill.allDie()
