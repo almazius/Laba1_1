@@ -1,15 +1,6 @@
-from re import L
 import xml.etree.ElementTree as ET
 import json
 import sys
-
-class ErrorType(Exception):
-    """ """
-    def __init__(self, message="This type dont serelization."):
-        self.message = message;
-        super().__init__(self.message)
-
-#end ErrorType
 
 class Bird: # JSON
     def __init__(self, name="", speed=0, color=""):
@@ -43,6 +34,11 @@ class Mammal:
     def __del__(self):
         print("Mammal " + self.name + " deleted.")
 
+    def getDict(self):
+        data = {}
+        data["type"] = self.type
+        data["age"] = self.age
+        return data
 
     def getSound(self):
         print("*noise*")
@@ -95,15 +91,19 @@ class FileManager:
 
     @staticmethod
     def XMLserialization(data):
-        root = ET.Element("Mammals")
+        root = ET.Element("mammals")
         mammalName = ET.SubElement(root, data.name)
         mType = ET.SubElement(mammalName, "Type")
         mType.text = data.type
         mAge = ET.SubElement(mammalName, "Age")
         mAge.text = str(data.age)
         
-        tree = ET.ElementTree(root)
-        tree.write("data_file.xml")
+        s = ET.tostring(root, encoding="utf-8", method="xml")
+        s = s.decode("UTF-8")
+        with open(f"data_file_{data.name}.xml", "w") as wf:
+            wf.write(s)
+
+
 
     @staticmethod
     def XMLdeserialization(path = "data_file.xml"):
@@ -136,8 +136,26 @@ a1 = Mammal("Vasya", "Zebra", 12)
 a2 = Mammal("Petya", "Wolk", 1)
 a3 = Mammal("Tigar", "LEV", 16)
 
-l = FileManager.XMLdeserialization()
+mammals = {}
+
+mammals[a1.name] = a1.getDict()
+mammals[a2.name] = a2.getDict()
+mammals[a3.name] = a3.getDict()
+
+
+data = {}
+
+data["mammals"] = mammals
+
+FileManager.XMLserialization(a1)
+
+
+
+l = FileManager.XMLdeserialization("data_file_Vasya.xml")
 for el in l:
     print(el.__dict__)
 GodSkill.allDie()
+
+
+
     
