@@ -1,7 +1,7 @@
-from asyncore import write
+from re import L
+import xml.etree.ElementTree as ET
 import json
 import sys
-import os
 
 class ErrorType(Exception):
     """ """
@@ -20,6 +20,11 @@ class Bird: # JSON
     def __del__(self):
         print("Bird " + self.name + " deleted.")
 
+    def getDict(self):
+        data = {}
+        data["speed"] = self.speed
+        data["color"] = self.color
+        return data
 
     def getStart(self):
         print("Bird like fly! They're already flying!")
@@ -76,31 +81,63 @@ class FileManager:
     @staticmethod
     def JSONSerialization(data):
         with open("data_file.json", "w") as write_file:
-            write_file.write("[\n")
-            for i  in range(len(data)-1):
-                json.dump(data[i].__dict__, write_file, indent = 4)
-                write_file.write(',\n')
-            json.dump(data[-1].__dict__, write_file, indent = 4)
-            write_file.write("\n]")
-
+            json.dump(data, write_file, indent = 4)
+            
     @staticmethod
     def JSONdeserialization(path = "data_file.json"):
-        l=[]
         with open(path, "r") as read_file:
             data = json.load(read_file)
-            for el in data:
-                l.append(Bird(el["name"], el["speed"], el["color"]))
+            l = []
+            for el in data["birds"]:
+                print(el)
+                l.append(Bird(el, int(data["birds"][el]["speed"]), data["birds"][el]["color"]))
         return l
 
-bird2 = Bird("1", 1, "bb")
-bird3 = Bird("2", 2, "3b")
+    @staticmethod
+    def XMLserialization(data):
+        root = ET.Element("Mammals")
+        mammalName = ET.SubElement(root, data.name)
+        mType = ET.SubElement(mammalName, "Type")
+        mType.text = data.type
+        mAge = ET.SubElement(mammalName, "Age")
+        mAge.text = str(data.age)
+        
+        tree = ET.ElementTree(root)
+        tree.write("data_file.xml")
 
-#l = [bird1, bird2, bird3]
+    @staticmethod
+    def XMLdeserialization(path = "data_file.xml"):
+        l = []
+        tree = ET.parse(path)
+        root = tree.getroot()
+        for el in root:
+            l.append(Mammal(el.tag, el[0].text, int(el[1].text)))
+        return l
 
-#FileManager.JSONSerialization(l)
 
-l = FileManager.JSONdeserialization("data_file.json")
+#bird2 = Bird("1", 1, "bb")
+#bird3 = Bird("2", 2, "3b")
+
+#birds = {}
+
+#birds[bird1.name] = bird1.getDict()
+#birds[bird2.name] = bird2.getDict()
+
+#data = {}
+
+#data["birds"] = birds
+
+#FileManager.JSONSerialization(data)
+
+#l = FileManager.JSONdeserialization()
+#for el in l:
+#    print(el.getDict())
+a1 = Mammal("Vasya", "Zebra", 12)
+a2 = Mammal("Petya", "Wolk", 1)
+a3 = Mammal("Tigar", "LEV", 16)
+
+l = FileManager.XMLdeserialization()
 for el in l:
-    print("Name: " + el.name + " Speed: " + str(el.speed) + " clolor: " + el.color + "\n")
-
+    print(el.__dict__)
 GodSkill.allDie()
+    

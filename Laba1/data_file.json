@@ -1,17 +1,12 @@
-[
 {
-    "name": "Alex",
-    "speed": 12,
-    "color": "red"
-},
-{
-    "name": "1",
-    "speed": 1,
-    "color": "bb"
-},
-{
-    "name": "2",
-    "speed": 2,
-    "color": "3b"
+    "birds": {
+        "Alex": {
+            "speed": 12,
+            "color": "red"
+        },
+        "1": {
+            "speed": 1,
+            "color": "bb"
+        }
+    }
 }
-]
