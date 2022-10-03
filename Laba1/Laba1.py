@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import xml.etree.ElementTree as ET
 import json
 import sys
@@ -5,16 +6,21 @@ import xml
 import os
 from msvcrt import getch
 
-class Bird: # JSON
-    def __init__(self, name="", speed=0, color=""):
-        try:
-            self.name = name
-            self.speed = speed
-            self.color = color
-        except AttributeError:
-            print("Uncorrected object")
-        except Exception:
-            print("Error")
+class Animal:
+    @abstractmethod
+    def getDict():
+        """Get dictionary"""
+
+
+class Bird(Animal): # JSON
+    def __init__(self, name: str = "", speed: int = 0, color: str = ""):
+        self.name = name
+        self.speed = speed
+        self.color = color
+        #except AttributeError:
+        #    print("Uncorrected object")
+        #except Exception:
+        #    print("Error")
 
 
     def __del__(self):
@@ -45,7 +51,7 @@ class Bird: # JSON
 
 # end Bird
 
-class Mammal:
+class Mammal(Animal):
     def __init__(self, name="", Type="", age=0):
         try:
             self.name = name
@@ -204,8 +210,7 @@ class GodSkill:
             if len(GodSkill.mammals) == 0:
                 print("We have't mammals")
             else:
-                for el in GodSkill.mammals:
-                    FileManager.XMLserialization(el)
+                FileManager.XMLserialization(GodSkill.mammals)
         except Exception:
             print("Error")
 
@@ -281,9 +286,9 @@ class GodSkill:
 
 class FileManager:
     @staticmethod
-    def JSONSerialization(data):
+    def JSONSerialization(data, path:str = "data_file.json"):
         try:
-            with open("data_file.json", "w") as write_file:
+            with open(path, "w") as write_file:
                 json.dump(data, write_file, indent = 4)
         except AttributeError:
             print("Uncorrected object")
@@ -304,26 +309,24 @@ class FileManager:
 
     @staticmethod
     def XMLserialization(data):
-        try:
-            root = ET.Element("mammals")
-            mammalName = ET.SubElement(root, data.name)
-            mType = ET.SubElement(mammalName, "Type")
-            mType.text = data.type
-            mAge = ET.SubElement(mammalName, "Age")
-            mAge.text = str(data.age)
-            
-            s = ET.tostring(root, encoding="utf-8", method="xml")
-            s = s.decode("UTF-8")
-            with open(f"data_file_{data.name}.xml", "w") as wf:
-                wf.write(s)
-        except AttributeError:
-            print("Uncorrected object")
-        except Exception:
-            print("Error")
+        root = ET.Element("mammals")
+        for el in data:
+            mName = ET.Element(el.name)
+            mType = ET.SubElement(mName, "Type")
+            mType.text = el.type
+            mAge = ET.SubElement(mName, "Age")
+            mAge.text = str(el.age)
+            root.append(mName)
+
+        print(root)
+        s = ET.tostring(root, encoding="utf-8", method="xml")
+        s = s.decode("UTF-8")
+        with open(f"data_file_name.xml", "w") as wf:
+            wf.write(s)
 
 
     @staticmethod
-    def XMLdeserialization(path = "data_file.xml"):
+    def XMLdeserialization(path: str = "data_file.xml"):
         try:
             l = []
             tree = ET.parse(path)
@@ -339,4 +342,18 @@ class FileManager:
             print("Error")
 
 #end FileManager
+
 GodSkill.begin()
+
+#m = []
+#m.append(Mammal("oleg", "volk", 12))
+#m.append(Mammal("igo", "lev", 12))
+#m.append(Mammal("inav", "tigar", 12))
+
+#FileManager.XMLserialization(m)
+
+#l =[]
+
+#l = FileManager.XMLdeserialization("data_file_name.xml")
+#for el in l:
+#    print(el.__dict__)
