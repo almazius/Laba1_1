@@ -6,21 +6,14 @@ import xml
 import os
 from msvcrt import getch
 
-class Animal:
-    @abstractmethod
-    def getDict():
-        """Get dictionary"""
 
 
-class Bird(Animal): # JSON
+
+class Bird: # JSON
     def __init__(self, name: str = "", speed: int = 0, color: str = ""):
         self.name = name
         self.speed = speed
         self.color = color
-        #except AttributeError:
-        #    print("Uncorrected object")
-        #except Exception:
-        #    print("Error")
 
 
     def __del__(self):
@@ -51,25 +44,15 @@ class Bird(Animal): # JSON
 
 # end Bird
 
-class Mammal(Animal):
-    def __init__(self, name="", Type="", age=0):
-        try:
-            self.name = name
-            self.type = Type
-            self.age = age
-        except AttributeError:
-            print("Uncorrected object")
-        except Exception:
-            print("Error")
+class Mammal:
+    def __init__(self, name: str="", Type:str ="", age:int =0):
+        self.name = name
+        self.type = Type
+        self.age = age
 
 
     def __del__(self):
-        try:
-            print("Mammal " + self.name + " deleted.")
-        except TypeError:
-            print("Uncorrected value")
-        except Exception:
-            print("Error")
+        print("Mammal " + self.name + " deleted.")
 
     def getDict(self):
         data = {}
@@ -132,17 +115,20 @@ class GodSkill:
         print("Write data (name speed color)")
         try:
             name = input()
-            if name >= '0' and name<='9':
-                raise Exception
-            speed = input()
+            if name.isalpha() == False:
+                raise TypeError
+            speed = int(input())
             color = input()
-            if color >= '0' and color<='9':
-                raise Exception
+            if color.isalpha() == False:
+                raise TypeError
             GodSkill.birds.append(Bird(name, int(speed), color))
         except ValueError:
             print("Incorrect value")
-        except Exception:
-            print("Error")
+        except TypeError:
+            print("Error of type")
+        except Exception as e: 
+            print(e)
+
 
 
     @staticmethod
@@ -150,17 +136,17 @@ class GodSkill:
         print("Write data (name type age)")
         try:
             name = input()
-            if name >= '0' and name<='9':
-                raise Exception
+            if name.isalpha() ==False:
+                raise TypeError
             Type = input()
-            if Type >= '0' and Type<='9':
-                raise Exception
-            age = input()
+            if Type.isalpha() == False:
+                raise TypeError
+            age = int(input())
             GodSkill.mammals.append(Mammal(name, Type, int(age)))
         except ValueError:
             print("Incorrect value")
-        except Exception:
-            print("Error")
+        except Exception as e:
+            print(e)
 
 
     @staticmethod
@@ -173,6 +159,8 @@ class GodSkill:
             print("Error index. Mb all birs is die?")
         except Exception:
             print("Error")
+
+
     @staticmethod 
     def allDie():
         print("World is lost...")
@@ -226,8 +214,12 @@ class GodSkill:
             else:
                 l = FileManager.JSONdeserialization(s)
             birds = birds+l
-        except Exception:
-            print("Error")
+        except FileNotFoundError:
+            print("File not found")
+        except json.JSONDecodeError:
+            print("Fail!\nError on file")
+        except Exception as e:
+            print(e)
         else:
             print("Success")
 
@@ -242,8 +234,10 @@ class GodSkill:
             else:
                 l = FileManager.XMLdeserialization(s)
             mammals = mammals+l
-        except Exception:
-            print("Error")
+        except FileNotFoundError:
+            print("File not found")
+        except Exception as e:
+            print(e)
         else:
             print("Success")
 
@@ -254,15 +248,6 @@ class GodSkill:
         except Exception:
             print("Error")
 
-
-    @staticmethod 
-    def killBird(obj):
-        try:
-            obj.die()
-        except AttributeError:
-            print("Uncorrected object")
-        except Exception:
-            print("Error")
 
 
     @staticmethod 
@@ -291,20 +276,27 @@ class FileManager:
             with open(path, "w") as write_file:
                 json.dump(data, write_file, indent = 4)
         except AttributeError:
-            print("Uncorrected object")
+            print("Incorrected object")
         except Exception:
             print("Error")
 
 
     @staticmethod
     def JSONdeserialization(path = "data_file.json"):
-        with open(path, "r") as read_file:
-            data = json.load(read_file)
-            l = []
-            for el in data["birds"]:
-                print(el)
-                l.append(Bird(el, int(data["birds"][el]["speed"]), data["birds"][el]["color"]))
-        return l
+        try:
+            with open(path, "r") as read_file:
+                data = json.load(read_file)
+                l = []
+                for el in data["birds"]:
+                    print(el)
+                    l.append(Bird(el, int(data["birds"][el]["speed"]), data["birds"][el]["color"]))
+            return l
+        except FileNotFoundError:
+            print("File not found")
+        except json.JSONDecodeError:
+            print("Fail!\nError on file")
+        except Exception as e:
+            print(e)
 
 
     @staticmethod
@@ -337,7 +329,7 @@ class FileManager:
         except FileNotFoundError:
             print("File not found")
         except xml.etree.ElementTree.ParseError: 
-            print("File uncorrected")
+            print("File incorrected")
         except Exception:
             print("Error")
 

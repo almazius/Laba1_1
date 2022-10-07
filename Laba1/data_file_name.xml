@@ -1,1 +1,18 @@
-<mammals><s><Type>s</Type><Age>1</Age></s><Oleg><Type>Tigar</Type><Age>19</Age></Oleg></mammals>
+<mammals>
+	<s>
+		<Type>
+			s
+		</Type>
+		<Age>
+			1
+		</Age>
+	</s>
+	<Oleg>
+		<Type>
+			Tigar
+		</Type>
+		<Age>
+			19
+		</Age>
+	</Oleg>
+</mammals>

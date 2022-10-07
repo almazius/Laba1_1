@@ -1,12 +1,11 @@
 {
-  "birds": {
-    "Alex": {
-      "speed": 12,
-      "color": "red"
-    },
-    "1": {
-      "speed": 1,
-      "color": "bb"
+    "birds": {
+        "Vasya": {
+            "speed": 100,
+            "color": "Blue"
+        },
+        "Lox": {
+            "speed": 40
+        }
     }
-  }
 }
